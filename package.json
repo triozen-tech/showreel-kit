@@ -15,12 +15,16 @@
     "cover-check": "python3 scripts/cover-check.py",
     "cover": "node scripts/cover.mjs",
     "cutout": "node scripts/cutout.mjs",
+    "clean-mark": "python3 scripts/clean_mark.py",
     "cutout:setup": "python3 -m venv .venv-cutout && .venv-cutout/bin/pip install \"rembg[cpu,cli]\" \"huggingface_hub<1.0\"",
     "glb": "node scripts/glb.mjs",
     "assets": "node scripts/asset-check.mjs",
     "record-check": "node scripts/reel.mjs record",
     "new-day": "node scripts/new-day.mjs",
-    "sync-kit": "node scripts/sync-kit.mjs"
+    "sync-kit": "node scripts/sync-kit.mjs",
+    "refs": "node scripts/refs.mjs",
+    "refs:login": "node scripts/refs-login.mjs",
+    "refs:search": "node scripts/refs-search.mjs"
   },
   "dependencies": {
     "@fontsource-variable/big-shoulders-display": "^5.3.0",

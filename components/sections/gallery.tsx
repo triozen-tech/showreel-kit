@@ -190,7 +190,7 @@ function GL04() {
           <div className="flex items-center gap-4">
             <span className="grid h-12 w-12 place-items-center rounded-full bg-[var(--sx-accent)] text-[15px] font-[800] text-[var(--sx-accent-text)]">dl</span>
             <div className="leading-tight">
-              <p className="text-[16px] font-[700]">@dewlab.skin</p>
+              <p className="text-[16px] font-[700]">@yourbrand.studio</p>
               <p className="text-[13px] text-[var(--sx-muted)]">48.2k followers</p>
             </div>
             <Btn className="ml-2">Follow</Btn>

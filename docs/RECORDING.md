@@ -17,7 +17,7 @@ This matches the reference page's style: **phone held upright**, laptop in a **d
 
 ## 2. Record mode
 
-`?record=1` hides the cursor and scrollbar, waits for the loader to finish, then scrolls the page by itself. It has two modes.
+`?record=1` hides the real mouse pointer and the scrollbar, waits for the loader to finish, then scrolls the page by itself. It has two modes, and in both a **record cursor** plays the hovers (section C).
 
 ### A. Section timeline (recommended)
 
@@ -63,6 +63,23 @@ Scrolls the whole page at a steady speed. By default it takes `site/site.ts` →
 | Fixed speed instead | `?record=1&speed=200` |
 | More time on the loader | `?record=1&delay=4` |
 
+### C. Hover cursor (every reel, both modes)
+
+A clean pointer (`components/engine/RecordCursor.tsx`) glides through the page on soft arcs and plays the site's **real** hover states, so nobody touches the mouse on camera.
+
+| Attribute | Meaning |
+|---|---|
+| `data-hover-demo` | the cursor visits it once it is on screen (in page order) and hovers it |
+| `data-hover-demo="click"` | hover, then click halfway through the stay (swatches, Add to cart) |
+| `data-hover-hold="1.4"` | seconds to stay (default 1.1) |
+| `data-hover-at="0.5,0.3"` | where to rest inside it (fractions of its box); default: the first spot off headlines |
+| `data-hover-label="Swatch"` | name in the console (`[record] hover 3: Swatch`) |
+
+- **Real, not faked:** the element under the tip gets the same events a mouse sends (pointer/mouse over, enter, move, out, leave; down/up/click for `="click"`), so React handlers, Magnetic and TiltCard run, and it plus its ancestors get `.is-hover`. Every `:hover` rule (Tailwind `hover:` / `group-hover:` and plain CSS) also matches `.is-hover` (`lib/postcss-record-hover.cjs`), so write hovers normally.
+- **At least 3 hover moments per reel** (cards, swatches, buttons, Add to cart): `npm run check` counts the marks, `npm run reel` counts the hovers that played and FAILs under 3.
+- Never rests on headline text (h1–h3, `[data-split]`, `.font-display`, `[data-cursor-avoid]`), rides along with its target while the page scrolls, fades out when idle. Give hover sections a `data-record-hold` so the hover plays while the page stands still.
+- Off: `?static=1` (no motion at all), `&cursor=0`, or `meta.record.cursor = false`. It never reads the OS reduce-motion setting.
+
 ### Keys (both modes)
 
 | Key | Does |
@@ -76,6 +93,8 @@ To see the loader again, reload the page (or use a new Incognito window).
 ## Laptop only
 
 Reels are filmed **only on the laptop** (`?record=1` at 1440×900). The site is desktop only: no phone recordings and no phone checks. The reel must be exactly 1440×900. Before filming, `npm run reel` records the same run headlessly and runs freezedetect + frame-diff: film only after it says PASS. (`&at=HH:MM:SS` still starts a run at a set time if you ever need it.)
+
+
 
 ## 3. Set up the shot (phone vertical)
 

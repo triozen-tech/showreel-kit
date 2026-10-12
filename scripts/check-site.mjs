@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Checks that every image / video / frames folder used by the site (files in site/) exists, and that nothing in the
-// code honours the OS reduce-motion setting (only ?static=1 may switch motion off: lib/gsap.ts prefersReducedMotion()).
+// code honours the OS reduce-motion setting (only ?static=1 may switch motion off: lib/gsap.ts prefersReducedMotion()),
+// and that the site marks at least 3 record-cursor hover moments (data-hover-demo).
 //   npm run check
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -49,4 +50,13 @@ if (offenders.length) {
   offenders.forEach((f) => console.log(`    ${f}`));
   console.log("");
 } else console.log("✓ Motion lint: nothing honours the OS reduce-motion setting (only ?static=1 disables motion).\n");
-process.exit(ok && !offenders.length ? 0 : 1);
+
+// Hover moments: the record cursor (components/engine/RecordCursor.tsx) visits every [data-hover-demo] in ?record=1;
+// every reel needs at least 3 (cards, swatches, buttons, Add to cart). Checked once the site has its own components.
+const built = existsSync("site/components") && readdirSync("site/components").some((f) => /\.tsx?$/.test(f));
+const demos = (src.match(/data-hover-demo\b/g) ?? []).length;
+const hoverOk = !built || demos >= 3;
+if (!built) console.log("· Hover moments: site not built yet (placeholder), skipped.\n");
+else if (hoverOk) console.log(`✓ Hover moments: ${demos} data-hover-demo marks in site/ (record cursor plays them in ?record=1).\n`);
+else console.log(`✗ Hover moments: ${demos} data-hover-demo marks in site/, need at least 3 (cards, swatches, buttons, Add to cart).\n`);
+process.exit(ok && !offenders.length && hoverOk ? 0 : 1);

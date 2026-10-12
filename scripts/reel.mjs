@@ -4,7 +4,8 @@
 //   npm run reel [-- <name>]      record ?record=1 at 1440×900 → recordings/<name>.mp4 (default: reel-<date>),
 //                                 trimmed from the page's first paint to the end of the auto-scroll, then
 //                                 freezedetect (n=0.002, d=0.4 s) + frame-diff (no stretch ≥ 0.3 s without change).
-//                                 Prints PASS / FAIL and exits 1 on FAIL.
+//                                 Prints PASS / FAIL and exits 1 on FAIL. The site page (PAGE=/) also needs ≥ 3 hover
+//                                 moments from the record cursor (components/engine/RecordCursor.tsx, data-hover-demo).
 //   (other pages: PAGE=/lab npm run reel -- lab · longer runs: SECS=180)
 //   The video is always exactly 1440×900 (the run FAILS on any other size).
 //
@@ -122,6 +123,7 @@ async function reel(name) {
   let doneAt = 0;
   const errors = [];
   const marks = []; // { t: wall-clock s, label } from record mode's "[record] 12.40 s  → Label" logs
+  const hovers = []; // "[record] hover N: label" from the record cursor
   let planned = 0; // record mode's planned total (s), to catch a run that broke off early
   let lastFrameWall = Date.now();
   let crashed = "";
@@ -141,6 +143,8 @@ async function reel(name) {
       const pl = text.match(/\[record\] section timeline.*total ([\d.]+) s/);
       if (pl) planned = Number(pl[1]);
       const mk = text.match(/\[record\] [\d.]+ s\s+→ (.+)$/);
+      const hv = text.match(/\[record\] hover \d+: (.+)$/);
+      if (hv) hovers.push(hv[1].trim());
       if (mk) marks.push({ t: m.params.timestamp / 1000, label: mk[1].trim() });
       if (m.params.type === "error") errors.push(text);
     }
@@ -240,7 +244,11 @@ async function reel(name) {
   const dim = spawnSync("ffprobe", ["-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height", "-of", "csv=p=0", out], { encoding: "utf8" }).stdout.trim();
   const sized = dim === `${REEL.w},${REEL.h}`;
   console.log(`  size: ${dim.replace(",", "×")}${sized ? "" : `  ✗ must be ${REEL.w}×${REEL.h}`}`);
-  const pass = !freezes.length && !stuck.length && !errors.length && complete && sized;
+  // the site reel must show at least 3 real hover moments (record cursor)
+  const needHovers = PAGE === "/" ? 3 : 0;
+  const hovered = hovers.length >= needHovers;
+  console.log(`  hover moments: ${hovers.length}${hovers.length ? ` (${hovers.join(" · ")})` : ""}${hovered ? "" : `  ✗ need ≥ ${needHovers}: mark cards, swatches, buttons with data-hover-demo`}`);
+  const pass = !freezes.length && !stuck.length && !errors.length && complete && sized && hovered;
   console.log(pass ? "PASS" : "FAIL");
   process.exit(pass ? 0 : 1);
 }

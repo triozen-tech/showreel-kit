@@ -44,3 +44,18 @@ renders/
 *.p12
 .npmrc
 *credentials*.json
+
+# reference boards (npm run refs): private inspiration, never published; the saved-login browser profile
+# lives outside every project (~/.triozen-ref-browser) and must never be copied in
+refs/
+.triozen-ref-browser/
+
+# template repo: skip raw media, frame folders and big videos (keep the .gitkeep placeholders)
+raw/*
+!raw/.gitkeep
+raw-orig/
+public/frames/*
+!public/frames/.gitkeep
+*.mp4
+*.webm
+.cache/

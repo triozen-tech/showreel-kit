@@ -28,6 +28,7 @@ export type SiteMeta = {
   loader?: boolean;
   cursor?: boolean;
   /** Record mode (?record=1), constant-speed mode: a fixed speed, or `duration` = seconds for the whole page.
-   *  Ignored when the page uses the section timeline (data-record-time attributes, docs/RECORDING.md). */
-  record?: { speed?: number; duration?: number; delay?: number };
+   *  Ignored when the page uses the section timeline (data-record-time attributes, docs/RECORDING.md).
+   *  `cursor: false` turns off the record-mode hover cursor (components/engine/RecordCursor.tsx; on by default). */
+  record?: { speed?: number; duration?: number; delay?: number; cursor?: boolean };
 };

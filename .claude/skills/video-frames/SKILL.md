@@ -45,3 +45,10 @@ Read `docs/LESSONS.md` first (frame-scrub stutter, preload, fade video edges). D
 
 ## 3D models (F2, F3, F6)
 `npm run glb -- raw/model.glb public/<path>/model.glb --ogl` → plain geometry + WebP textures for the OGL loader and `<model-viewer>` (no decoder download). Without `--ogl` you get Meshopt (smaller; needs the MeshoptDecoder: three.js/R3F only). Keep each .glb ≤ 3 MB.
+
+## Scroll video as a <video> element (first used on Day 13)
+For a long, fast-moving POV/drive film where frames would be heavy, a real `<video>` scrubbed by video time works too:
+- Crop the Veo mark (e.g. `crop=1838:1034:41:0` = cut the bottom 46 px, width trimmed evenly) and scale to **1600×900** (covers 1440×900).
+- Encode **every frame as a keyframe** so seeking is smooth both ways: `-c:v libx264 -g 1 -keyint_min 1 -bf 0 -crf 22 -an -movflags +faststart` and a WebM fallback `-c:v libvpx-vp9 -b:v 0 -crf 34–44 -g 1 -an`. 8 s ≈ 11 MB each.
+- Put the files in **`public/videos/`** (`npm run check` and `npm run assets` cover it). Set `video.currentTime = progress × duration` in a rAF loop, only when it changed by more than 1/60 s; in `?static=1` show the last (or a chosen) frame.
+- Start = end loops (hero films): measure first vs last frame against a normal frame step and bake a 12-frame crossfade (`trim` + `xfade`, lesson 68).

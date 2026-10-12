@@ -187,7 +187,7 @@ A transition is how one section hands over to the next. Pick one per boundary; t
 
 ## I. Details (Round 4)
 
-Micro-interactions are not section codes; list the ones used under the Motion map. Ideas: magnetic buttons (`components/ui/Magnetic`), cursor label (`data-cursor`), image tilt (`TiltCard`), link underline draw, button fill wipe, price flip on hover, "added to bag" count bump, nav item sliding pill, hover image preview that follows the cursor. **Each one also needs a hands-free version** (plays by itself once while on screen) so it shows up when filming.
+Micro-interactions are not section codes; list the ones used under the Motion map. Ideas: magnetic buttons (`components/ui/Magnetic`), cursor label (`data-cursor`), image tilt (`TiltCard`), link underline draw, button fill wipe, price flip on hover, "added to bag" count bump, nav item sliding pill, hover image preview that follows the cursor. **Each one also needs a hands-free version** (plays by itself once while on screen) so it shows up when filming: for hovers, mark the element `data-hover-demo` and the engine's record cursor plays its real hover in `?record=1` (docs/RECORDING.md "Hover cursor").
 
 ---
 
@@ -1151,6 +1151,32 @@ Transitions: 2→3 X2 colour wash · 3→4 X3 torn edge stretches · …
 Details: magnetic Menu button · copper underline draw on links · …
 ```
 
+## Hover map + Product detail plan (also required in `site/DESIGN.md`)
+
+```
+## Hover map
+
+| Element | Where | Hover effect | From (pick) | Record cursor |
+|---|---|---|---|---|
+| Product card | Shop grid | photo swaps to the on-body shot, price slides up | Shop · B | data-hover-demo (1st card) |
+| Colour swatch | Product detail | the bottle re-tints, ring tightens | Product · A | data-hover-demo="click" (2 swatches) |
+| Primary button | everywhere | fill wipes left → right, arrow nudges | ours | data-hover-demo (hero CTA) |
+| Add to cart | Product detail | lifts 2 px; click: item flies to the bag, count bumps | Product · A | data-hover-demo="click" |
+| Text link | nav, footer | underline draws from the left | Footer · C | — |
+
+At least 3 record-cursor stops per reel (cards, swatches, buttons, Add to cart).
+
+## Product detail plan
+
+| Interaction | Section | How it works here | From (pick) |
+|---|---|---|---|
+| Hover loupe | PDP gallery | round lens follows the pointer, 2.2× | Product · C |
+| Swatches swap the product | PDP | cross-fade between pixel-aligned shade stills | Product · A |
+| Option chips | PDP | size chips with a sliding highlight (Flip) | Shop · A |
+| Sticky buy box | PDP | price + Add to cart stay pinned while the story scrolls | Product · B |
+| Add-to-cart animation | PDP → nav | thumbnail arcs into the bag, count bumps | ours |
+```
+
 Desktop only (1440×900): no Phone column, no phone fallbacks; any "Phone" notes in the tables above are legacy and ignored.
 
-Checklist before approving: every section has a layout code (SECTION-MENU) and a motion code · no code appears twice · no section is "fade in" · the hero and signature repeat no earlier site's (every row of the sites log) · the hero is not a shape growing to full screen.
+Checklist before approving: every section names the user's pick for it (REFS.md) and what we take from it, ideas mix ≥ 3 sites, no layout copied, the Hover map has ≥ 3 record-cursor stops, the Product detail plan is filled · every section has a layout code (SECTION-MENU) and a motion code · no code appears twice · no section is "fade in" · the hero and signature repeat no earlier site's (every row of the sites log) · the hero is not a shape growing to full screen.

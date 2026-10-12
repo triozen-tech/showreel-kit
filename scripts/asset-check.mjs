@@ -1,4 +1,4 @@
-// Asset size check before a commit/push (raw/, public/frames/, public/images/, cover.jpg go into the day's repo).
+// Asset size check before a commit/push (raw/, public/frames/, public/images/, public/videos/, cover.jpg go into the day's repo).
 //   npm run assets            → table of asset folders + biggest file; exits 1 if a file > 50 MB is not in Git LFS
 // Files over 50 MB must go through Git LFS:  git lfs track "<path>"  (adds the exact path to .gitattributes).
 // Files over 100 MB: GitHub refuses them without LFS; this script warns loudly.
@@ -6,7 +6,7 @@ import { execSync } from "node:child_process";
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-const ASSETS = ["raw", "public/frames", "public/images", "cover.jpg"];
+const ASSETS = ["raw", "public/frames", "public/images", "public/videos", "cover.jpg"];
 const MB = 1024 * 1024;
 const files = [];
 const walk = (p) => {
