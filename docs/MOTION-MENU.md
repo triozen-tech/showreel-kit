@@ -154,6 +154,7 @@ Every one is built so a `?record=1` run at 1440×900 has **zero frozen frames** 
 | F6 | **Simple 3D orbit** | `<model-viewer>` placed on the anchor box; `camera-orbit` = turn/tilt each frame | @google/model-viewer (Apache-2.0, +336 KB) · `ObjectModelViewer` | orbit follows scroll + idle | same | high |
 | F7 | **Floating ingredients** | 5–12 cut-outs at 3 depths (size, blur, parallax) around the product; idle bob + scroll parallax | GSAP ticker · `FloatingIngredients` | always bobbing | 6 items | low |
 | F8 | **Land in UI** | Add to cart: a copy of the product flies (Flip.fit, with an up-arc) into the cart pill, the count bumps; record mode adds once by itself | Flip (on demand) · in `TravelPage` | plays once on camera | same | low |
+| F9 | **Fruit-to-juice traveller** | the F1 waypoint driver with state layers (whole → halves → drop → splash → stamp) cross-faded by scroll; it replaces each section's own copy of the object (see M717) | gsap ticker (`OrangeTraveller`, first built for a juice site) | ambient life in each section; the traveller itself is scroll-linked | — | low |
 
 ## H. Section transitions (Round 3)
 
@@ -723,6 +724,9 @@ Grown from open animation libraries and award sites (log: `docs/MOTION-LOG.md`; 
 | M713 | **ASCII rain locks into image** | Columns of characters rain down matrix-style and lock cell by cell into the ASCII image, flash as they lock, then let go and rain again. | auto | canvas | Product reveals, drops, tech launches | Calm wellness or luxury brands | M712 |
 | M714 | **Particle swirl slide change** | The slide breaks into ~20k WebGL points that swirl around the centre and reform as the next image, then swirl back. | auto | ogl | Collection sliders, hero image changes | Text-heavy slides (type turns to dust) | X8 |
 | M715 | **Shattered glass image change** | The image cracks from an impact point into triangular shards that spin, tip toward the viewer and fall away, revealing the next image beneath. | auto | ogl | Bold colour or variant switches, launches | Gentle or care-focused brands | — |
+| M716 | **Crate-to-bottle fill** | Each picked ingredient lifts out of its bin, arcs into the bottle neck (MotionPath) and becomes a new liquid layer that rises with a rolling wavy surface; after the last pick a chalkboard writes the blend's name and chalks in the price. Layers stay readable (no stacking objects). | click (auto demo once) | gsap/MotionPath, css mask | Juice, smoothie, cocktail, coffee, tea and any build-your-own drink | Products with no liquid or fill level | M110 (chalk writing) · first built for a cold-pressed juice site |
+| M717 | **Fruit-to-juice travelling ingredient** | One cut-out fruit travels down the whole page with the scroll and changes state on the way: rolls out of the hero, hops along cards (squash on landing), drops into a picker cell and becomes the pick, splits into halves, squeezes into a juice drop that fills a bar, falls into a product photo with a splash, and ends as a round stamp. Live-measured waypoints, interpolated by scroll position (any speed, stop or reverse gives the same frame). | scrub | gsap ticker, css | Juice, smoothie, food and ingredient brands with a farm-to-product story | Pages whose sections have no free space beside the text | F1 · first built for a cold-pressed juice site |
+| M718 | **Flavour-change fruit burst** | On each flavour change a dozen small cut-out pieces of that flavour's fruit fly out from behind the product and fade (0.95 s), as the colour wipes in. | click/auto | gsap | Flavour, colour and variant switchers for food and drinks | Calm luxury products | M543 |
 
 ### L·ambient · Backgrounds & ambient
 
@@ -943,6 +947,7 @@ Grown from open animation libraries and award sites (log: `docs/MOTION-LOG.md`; 
 | X93 | **ASCII fray seam wipe** | A before/after seam crosses two pages as a flickering band of ASCII glyphs: the old page frays into characters and the new one resolves out of them. | scrub | canvas | Editorial, tech, music, streetwear; page or chapter handovers | Soft luxury, calm wellness, pastel brands | X8 |
 | X94 | **Diagonal slideshow** | Tilted slides glide along the diagonal (~1 s) while the previous and next slides peek above and below and the title swaps in a mask. | auto | gsap | Fashion lookbooks, collections, portfolios; product slideshows | Dense text sections, data-heavy pages | — |
 | X95 | **Per-slide grid composition** | Each slide is its own CSS-grid layout; on change colour blocks wipe across every cell, the layout switches and the new images reveal from their own blocks (~1.2 s). | auto | gsap | Lookbooks, editorial galleries, interiors; collection switchers | Single-hero pages, minimal one-image layouts | — |
+| X96 | **Juice-pour edge** | The next section's colour rises over the seam as a wavy liquid surface with a few droplets, tied to the scroll (forward and back), then hands over to the solid band. Use at 2–3 key changes only. | scrub | gsap ticker, svg path | Drinks, sauces, cosmetics, any liquid product | Using it at every seam |
 
 ### L·loader · Loaders (I)
 
