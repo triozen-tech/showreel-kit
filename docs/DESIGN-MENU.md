@@ -119,6 +119,7 @@ Install: `npm i <package>` → import in `site/fonts.ts` → use the family name
 | T28 | Lexend Mega `@fontsource-variable/lexend-mega` | Public Sans `@fontsource-variable/public-sans` | loud geometric neo-brutalist: snacks, apps |
 | T29 | Calistoga `@fontsource/calistoga` | Work Sans `@fontsource-variable/work-sans` | warm boutique: cafés, bakeries |
 | T30 | Kalam `@fontsource/kalam` | Patrick Hand `@fontsource/patrick-hand` | hand-drawn: kids, stationery (the ballpoint sketch palette) |
+| T31 | Red Hat Display (500–900) `@fontsource-variable/red-hat-display` | Red Hat Mono `@fontsource-variable/red-hat-mono` (+ Lobster Two Bold Italic `@fontsource/lobster-two` for one script word) | travel, outdoor, glass & chrome (L16): giant place names, mono for altitudes, dates and samples |
 
 A script font (Great Vibes, Pinyon Script, Caveat, Kaushan Script) may be used for **one highlighted word** per heading — never for paragraphs.
 
@@ -166,6 +167,7 @@ More shapes (each: good for · avoid with):
 - **S10 stepped / staircase edges**: sections meet on a stepped edge (3–4 steps) that shifts as you scroll · Swiss, architecture, sport · avoid with soft clay
 - **S11 overlapping sheets**: each section is a sheet laid slightly over the last with a soft shadow and a few degrees of rotation · editorial, stationery, food · avoid with brutalist mono
 - **S12 pixel/grid edge**: the boundary is a row of squares that breaks up (pairs with X8) · tech, gaming, electronics · avoid with luxury serif looks
+- **S13 cloud seam**: soft cloud banks drift across every section boundary, parallax with the scroll (X97) · travel, aviation, outdoor · avoid with hard-edged Swiss or brutalist looks
 
 ## 7. Card style
 

@@ -7,7 +7,7 @@
 //
 // Copies the kit only (docs, skills, scripts, components, engine, lab): the new folder starts with an empty site/,
 // raw/, public/images/ and public/frames/. Then: fresh `git init` + first commit, remote
-// git@<sshHost>:<owner>/day-NN-slug.git (kit.config.json), and a private GitHub repo if the `gh` CLI is logged in.
+// git@<sshHost>:<owner>/day-NN-slug.git (kit.config.json), and a GitHub repo (public/private per kit.config.json) if the `gh` CLI is logged in.
 // Writes .kit.json (template path, port, file hashes) for `npm run sync-kit`.
 import { spawnSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -117,6 +117,10 @@ if (!flag("no-install")) {
 // ---------- git ----------
 if (!flag("no-git")) {
   run("git", ["init", "-q", "-b", "main"]);
+  // commit as the studio account only (local to this repo), never the Mac's global git identity
+  const who = cfg.github ?? {};
+  if (who.userName) run("git", ["config", "user.name", who.userName]);
+  if (who.userEmail) run("git", ["config", "user.email", who.userEmail]);
   run("git", ["add", "-A"]);
   run("git", ["commit", "-q", "-m", `Day ${pad} · ${slug}: start from showreel-kit`]);
   const gh = cfg.github ?? {};
@@ -129,7 +133,7 @@ if (!flag("no-git")) {
       if (r.status === 0) run("git", ["push", "-u", "origin", "main"]);
     } else {
       console.log(`! GitHub repo not created (${hasGh ? "--no-github" : "gh CLI not installed / not logged in"}).`);
-      console.log(`  Create an EMPTY private repo "${gh.owner}/${name}" on github.com, then: git push -u origin main`);
+      console.log(`  Create an EMPTY ${gh.private === false ? "public" : "private"} repo "${gh.owner}/${name}" on github.com, then: git push -u origin main`);
     }
     console.log(`✓ git: branch main, remote origin = ${url}`);
   }

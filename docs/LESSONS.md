@@ -164,3 +164,18 @@ Short rules learned the hard way on Days 1–7. `/new-site` and every round star
 135. **Decode big images right after load** (`img.decode()` for every page image): the clock's 12 pieces stalled the recorder ~0.4 s as the pin arrived. Never animate `filter: blur()` on a stamp either (a 0.5 s stall) (Day 16).
 136. **Fly-to-bag:** route the flying copy through measured empty space (between the title and the price, then along the top edge), carry it in a ringed token (a copy of a necklace flying over the same necklace is invisible), land it while its section is still on screen, and let the Bag own the count through one event (`kj:add`) so every Add to bag bumps it (Day 16).
 137. **"size 1278×900" from `npm run reel` is a capture race** (the headless window kept its spare height): re-run before changing the site (Day 16).
+
+## Day 17 · Pulp Fresh
+138. **Hand-scrolled reels: every scroll-linked motion is a pure function of the scroll position** (any speed, a stop or scrolling back gives the same frame), and nothing depends on the record cursor; build-your-own picks are made by the scroll and undone when scrolling back, clicks still work (Day 17).
+139. **A page-wide travelling object replaces each section's own copy** (an empty slot until the hand-over), measures its waypoints live from anchor elements every frame, routes only through free space and hides in `?static=1` (F9, Day 17).
+140. **Build-your-own layers stay readable after the last pick**: three separate layers, never blended into one colour (Day 17).
+141. **Special seams only at 2–3 key changes** (the juice-pour edge, X96), not at every boundary (Day 17).
+
+## Day 18 · Cairnline Treks
+142. **Check the plan's brand name before using it**: Day 18's belonged to a real travel company and Day 20's clashed with a registered apparel trademark. Rename to a fictional name and never use the old one anywhere (Day 18, Day 20).
+143. **Giant names over a film need a clear sky band**: lower each film by a measured, time-based shift and continue its own sky colour above it; pick the clip's seconds where the sky is clear (Day 18).
+144. **Cloud seams**: noise-rendered cumulus, 3 layers each with its own size, height, speed and offset, shown only while the boundary crosses the screen; dark seams use soft, low-contrast mist (X97, Day 18).
+145. **A tall stitched image reads soft when stretched**: show it as a centred column at native width (1150 px), not 1.4× full width (Day 18).
+146. **A loupe crops from the 2K source photo**, never from the display-size image (Day 18).
+147. **A cursor pill hides near buttons, links and bars**, and the kit's cursor ring is turned off when the site has its own cursor (Day 18).
+148. **A flying object on the cover casts no contact shadow**: `npm run cover -- --no-contact` (Day 18).

@@ -1,4 +1,4 @@
-// npm run cover -- --day 11 --niche "GYM" --accent "#2F55E4" [--object raw/cover-object.png] [--object-cx 760] [--object-bottom 700] [--shot raw/cover-shot.jpg] [--dir <day folder>] [--out <file.jpg>]
+// npm run cover -- --day 11 --niche "GYM" --accent "#2F55E4" [--object raw/cover-object.png] [--object-cx 760] [--object-bottom 700] [--shot raw/cover-shot.jpg] [--dir <day folder>] [--out <file.jpg>] [--no-contact]
 // Builds the 9:16 reel cover (1080×1920 JPG, q92) as an HTML page and screenshots it with Playwright (installed Chrome),
 // so Anton + Urbanist render exactly. Same layout every day:
 //   DAY pill · browser card with the 1440×900 hero shot · cut-out object breaking out above the card · niche / SCROLL WEBSITE ·
@@ -42,6 +42,7 @@ const at = (p) => (isAbsolute(p) ? p : join(dir, p));
 const dd = String(day).padStart(2, "0");
 const shot = at(arg("shot") ?? "raw/cover-shot.jpg");
 const object = arg("object") ? at(arg("object")) : existsSync(at("raw/cover-object.png")) ? at("raw/cover-object.png") : null;
+const noContact = argv.includes("--no-contact"); // a flying object (not resting on the card) casts no contact shadow
 const out = arg("out") ? at(arg("out")) : join(dir, "recordings", `day-${dd}-cover.jpg`);
 for (const f of [shot, object].filter(Boolean)) if (!existsSync(f)) (console.log(`missing: ${f}`), process.exit(1));
 
@@ -141,8 +142,8 @@ body { position: relative; -webkit-font-smoothing: antialiased; }
 </style></head><body>
 <div class="pill">DAY ${day}</div>
 <div class="card"><div class="bar"><i></i><i></i><i></i></div><img class="shot" src="${pathToFileURL(shotFile).href}">${obj ? `<img class="cast" src="${pathToFileURL(obj.file).href}" style="left:${obj.left - CARD.x - 1}px;top:${obj.top + 18 - CARD.y - 1}px;width:${obj.w}px;height:${obj.h}px">` : ""}</div>
-${obj ? `<div class="contact" style="left:${OBJ.cx - obj.w * 0.35}px;top:${obj.top + obj.h - 16}px;width:${obj.w * 0.7}px;height:30px"></div>
-<div class="obj" style="left:${obj.left}px;top:${obj.top}px;width:${obj.w}px;height:${obj.h}px"><img src="${pathToFileURL(obj.file).href}"></div>` : ""}
+${obj && !noContact ? `<div class="contact" style="left:${OBJ.cx - obj.w * 0.35}px;top:${obj.top + obj.h - 16}px;width:${obj.w * 0.7}px;height:30px"></div>` : ""}
+${obj ? `<div class="obj" style="left:${obj.left}px;top:${obj.top}px;width:${obj.w}px;height:${obj.h}px"><img src="${pathToFileURL(obj.file).href}"></div>` : ""}
 <div class="text"><div class="l1">${niche.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</div><div class="l2">SCROLL WEBSITE</div></div>
 <div class="badge"></div><div class="studio">TRIOZEN TECH</div>
 <div class="grain"></div>
