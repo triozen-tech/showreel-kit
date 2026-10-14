@@ -30,7 +30,7 @@ end) → frames are picked by video time per segment → graded onto the page co
 quality that fits the budget → manifest.json with "times" (the video second of every frame). Play them with
 lib/film.ts + components/patterns/FilmPin.tsx (scroll → video time, neighbour frames blended, lazy loading).
 """
-import io, json, os, shutil, subprocess, sys, tempfile
+import argparse, io, json, os, shutil, subprocess, sys, tempfile
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
@@ -239,7 +239,69 @@ def _bytes(arr, q):
 
 PHONE_ONLY = "--phone-only" in sys.argv
 
+def quick(a):
+    """One clip, no frames.json: `npm run film-frames -- --src raw/v1.mp4 --name v1 --fps 24 [--count 120] [--fmt webp|jpg]`.
+    Writes public/frames/<name>/frame_0001.<fmt> + manifest.json (count, width, height, ext, pad, prefix, fps, times) that
+    FrameScrub (components/video/) and lib/frames.ts read. The Flow/Veo mark is painted out (--delogo "" to skip)."""
+    src = Path(a.src)
+    if not src.is_absolute():
+        src = ROOT / src
+    out = Path(a.out) if a.out else OUT / a.name
+    if not out.is_absolute():
+        out = ROOT / out
+    tmp = TMP / f"quick-{a.name}"
+    shutil.rmtree(tmp, ignore_errors=True)
+    tmp.mkdir(parents=True)
+    dur = float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(src)]))
+    t0, t1 = a.start, min(a.end or dur, dur)
+    fps = a.fps
+    if a.count:  # a frame count wins over fps
+        fps = a.count / max(0.01, t1 - t0)
+    vf = ",".join(x for x in (a.delogo, f"fps={fps:.5f}", f"scale={a.width}:-2:flags=lanczos") if x)
+    sh("ffmpeg", "-v", "error", "-y", "-ss", str(t0), "-to", str(t1), "-i", str(src), "-vf", vf, "-q:v", "2", str(tmp / "f_%05d.png"))
+    files = sorted(tmp.iterdir())
+    if a.count:
+        files = files[: a.count]
+    if out.exists():
+        shutil.rmtree(out)
+    out.mkdir(parents=True)
+    ext = "jpg" if a.fmt == "jpg" else "webp"
+    total = 0
+    for i, f in enumerate(files):
+        im = Image.open(f).convert("RGB")
+        dst = out / f"frame_{i + 1:04d}.{ext}"
+        if ext == "jpg":
+            im.save(dst, "JPEG", quality=a.quality, optimize=True)
+        else:
+            im.save(dst, "WEBP", quality=a.quality, method=5)
+        total += os.path.getsize(dst)
+    w, h = im.size
+    man = dict(count=len(files), ext=ext, width=w, height=h, pad=4, prefix="frame_", fps=round(fps, 3),
+               times=[round(t0 + i / fps, 4) for i in range(len(files))])
+    (out / "manifest.json").write_text(json.dumps(man))
+    shutil.rmtree(tmp, ignore_errors=True)
+    print(f"  ✓ {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}: {len(files)} frames {w}×{h} {ext} q{a.quality} = {total / 1e6:.1f} MB")
+    if total > 50e6:
+        print("  ! over 50 MB in total: lower --width/--quality (a single file over 50 MB goes through Git LFS; 100 MB is the hard limit)")
+
+
 if __name__ == "__main__":
+    if "--src" in sys.argv:
+        ap = argparse.ArgumentParser()
+        ap.add_argument("--src", required=True)
+        ap.add_argument("--name", required=True, help="folder name: public/frames/<name>")
+        ap.add_argument("--out", help="override the output folder")
+        ap.add_argument("--fps", type=float, default=24)
+        ap.add_argument("--count", type=int, help="exact frame count (overrides --fps)")
+        ap.add_argument("--fmt", choices=["webp", "jpg"], default="webp")
+        ap.add_argument("--quality", type=int, default=72)
+        ap.add_argument("--width", type=int, default=1600)
+        ap.add_argument("--start", type=float, default=0)
+        ap.add_argument("--end", type=float, default=0)
+        ap.add_argument("--delogo", default=DELOGO)
+        quick(ap.parse_args())
+        shutil.rmtree(TMP, ignore_errors=True)
+        sys.exit(0)
     if not CLIPS:
         sys.exit(f"no clips: write {CONFIG} first (see the docstring at the top of this file)")
     names = [a for a in sys.argv[1:] if not a.startswith("--")] or list(CLIPS)

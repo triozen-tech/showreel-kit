@@ -27,6 +27,7 @@ This repo builds **one showcase website per day**. The team films the laptop scr
 | `components/sections/` | **Section layouts**: 90 full designed sections, one per `docs/SECTION-MENU.md` code (HR, FT, BN, PS, ST, SY, GL, SP, PR, FQ, CT, NL, FO), shared blocks in `kit.tsx`, motion by code in `motion.ts`. See them live at `/lab/sections` | No: copy the layout into `site/components/`, then restyle |
 | `components/ui/` | SplitText (GSAP SplitText, masked lines), Magnetic, Button, TiltCard | Rarely |
 | `components/fx/` | **Effect library** (M38+ motions, X6+ transitions, I6 loader, collected effects): text, layout, WebGL (`gl.tsx`), more. Live at **`/lab`** (hidden, noindex). **`fx/travel/`**: travelling product object F1–F8 (driver + PNG / OGL 3D / three / R3F / model-viewer layers), live at **`/lab/travel/f1 · f3 · f6`** | No: import or copy |
+| `components/video/FrameScrub.tsx` · `lib/chain.ts` | **Video-first engine**: scroll-scrubbed image sequence (eased, alive when idle, `?static=1` = one still) + chain helper that plays clips V1..Vn along one scroll with a crossfade on each join. Docs: `docs/VIDEO-FIRST.md`, test page `/lab/scrub` | No |
 | `lib/gsap.ts` · `lib/gl.ts` · `lib/film.ts` | GSAP + **all plugins registered in one place** (`loadPlugin()` for the big ones) · OGL WebGL helper (lazy) · scroll-video player (video time, blending, subject-fit) + `components/patterns/FilmPin.tsx` | No |
 | `scripts/` | `make_frames.py` (video → frames by video time), `reel.mjs` (record + freeze checks), `cover-check.py`, `check-site.mjs`, `archive.mjs`, `refs.mjs` + `refs-search.mjs` + `refs-login.mjs` + `refs-sources.json` (reference board) | No |
 | `.claude/skills/` | `new-site` + ours: `video-frames`, `record-check`, `cover-check`, `flow-prompts`, `caption`, `archive-day` + official GSAP skills (`gsap-*`) | Add, don't edit |
@@ -51,7 +52,7 @@ This repo builds **one showcase website per day**. The team films the laptop scr
 **Every round starts by re-reading `docs/LESSONS.md`.** Stop after **every** round, tell the user in plain simple language what to check, and wait for their "ok".
 
 ### Build modes: LEAN (Pro) or FULL (Max)
-At the very start of every new day (Round 0), **ask first: "Which plan today: Pro or Max?"** and wait for the answer. Write the chosen mode at the top of that day's `site/DESIGN.md` (e.g. `**Mode: LEAN (Pro)**`) and follow it in every round. Both modes: same design quality, same Round 0 + 5 rounds, desktop 1440×900 only.
+**We are on the Claude PRO plan now and in future: never assume Max** (usage can vary by a few percent). The default is **Mode: Pro = LEAN**; do not ask "Pro or Max?" each day. Write `**Mode: Pro**` at the top of the day's `site/DESIGN.md` and follow it in every round. Pro rules: desktop 1440×900; keep replies short; do not open or view images unless needed; run local tools (`npm run cutout`, `npm run clean-mark`, `npm run film-frames`) instead of doing the work in chat. Only if the user says "today is Max" use FULL. Both modes: same design quality, same Round 0 + 5 rounds, desktop 1440×900 only.
 
 **LEAN mode (Pro)**: we film manually. Wherever a round below says otherwise, this wins:
 - **No** reel recording, `npm run reel` / `record-check` / freezedetect, re-recording or contact sheets.
@@ -76,7 +77,7 @@ At the very start of every new day (Round 0), **ask first: "Which plan today: Pr
 - When the user pastes back the prompts that were run, Claude adds them word for word to DESIGN.md under **"Prompts (as run)"** (asset ID · date · prompt · attachments), for the record.
 
 ### Round 0 — Design direction (no code yet)
-0. **Ask "Which plan today: Pro or Max?"** and wait (see Build modes). Then **read `docs/LESSONS.md`.**
+0. **Mode is Pro unless the user says Max** (see Build modes). Then **read `docs/LESSONS.md`.**
 1. **Reference board, per section** (`docs/REFERENCE-SOURCES.md`), using the business from the brief (e.g. "skincare"), in this order:
    - **a. Section list:** `npm run refs -- <day> "<category>" --sections` suggests the sections (edit with `--sections "hero,shop,product,…"`). Show it to the user and **STOP for their OK**, then `npm run refs -- <day> --approve`.
    - **b. Search sheet:** `npm run refs:search -- <day>` builds `day<N>/refs/search.html` and opens it in the user's normal browser. Each section gets 5 searches (2 same niche + 3 any business), each with a different style word (rotating by day), as links to Pinterest, Dribbble (+ animated) and Behance, plus the file names to save as. It only makes links.
@@ -191,7 +192,7 @@ If you build something on a site that would be useful again (a new nav, hero, ca
 - `npm run check`: all images/frames used in `site/` exist
 - `npm run assets`: asset sizes (raw, frames, images, cover) + biggest file; fails if a file over 50 MB is not in Git LFS, warns over 100 MB
 - `npm run reel [-- <name>]`: record `?record=1` at 1440×900 → `recordings/<name>.mp4` + freezedetect + frame-diff (PASS / FAIL)
-- `npm run film-frames [clip]`: video → scroll frames by video time (`site/frames.json`, skill `video-frames`)
+- `npm run film-frames [clip]`: video → scroll frames by video time (`site/frames.json`, skill `video-frames`). Quick mode, no config: `npm run film-frames -- --src raw/v1.mp4 --name <slug>-v1 [--fps 24 | --count 120] [--fmt webp|jpg] [--width 1600] [--quality 72] [--start s --end s]` → `public/frames/<name>/` + `manifest.json` (count, size, fps, times); the Flow mark is painted out
 - `npm run cover -- --day <N> --niche "<WORD>" --accent "#rrggbb" [--object raw/cover-object.png] [--shot raw/cover-shot.jpg] [--dir <day folder>]`: the 9:16 reel cover → `recordings/day-XX-cover.jpg` (locked spec: `docs/COVER.md`)
 - `npm run cover-check -- <cover.jpg> [--fit]`: Instagram safe areas on a 9:16 cover
 - `npm run clean-mark -- <image.jpg> <cx,cy,r> [...] --backup-dir raw/_orig`: paint out the Gemini ✦ mark (lesson 92; check with a high-pass first, lesson 112)

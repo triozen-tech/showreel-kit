@@ -179,3 +179,8 @@ Short rules learned the hard way on Days 1–7. `/new-site` and every round star
 146. **A loupe crops from the 2K source photo**, never from the display-size image (Day 18).
 147. **A cursor pill hides near buttons, links and bars**, and the kit's cursor ring is turned off when the site has its own cursor (Day 18).
 148. **A flying object on the cover casts no contact shadow**: `npm run cover -- --no-contact` (Day 18).
+
+## Video-first engine
+149. **Keyframe stills join the clips, so all videos run in one batch**: the end keyframe of V(n) is the start keyframe of V(n+1); generate all stills first, then every clip together.
+150. **Claude Code never writes Flow/Veo prompts**: the director gives them to the user; Claude only records the pasted ones under "Prompts (as run)" in DESIGN.md.
+151. **No repo-size rule, but a single file over 50 MB goes through Git LFS** (`.gitattributes`); GitHub's hard limit is 100 MB per file.
