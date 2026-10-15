@@ -275,6 +275,7 @@ function TimelineScrub({ segs, clipOrder, stillAt = 0.1, onProgress, lead = 0, h
       for (const L of layersAt(segs, tl!, x)) {
         const sg = segs[L.i];
         if ("img" in sg) { const im = getStill(sg.img); if (im) drawImg(im, L.alpha); continue; }
+        ensureClip(sg.clip); // a clip dropped while far away restarts the moment any of it is on screen (jump back from the end)
         const n = counts[L.i];
         let f = L.t * (n - 1);
         const z = zoneOf(L.i);

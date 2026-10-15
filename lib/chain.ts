@@ -50,7 +50,7 @@ export const ramp = (x: number, a: number, b: number, c: number, d: number) => s
 
 /** clip: folder of a frame sequence; plays over `w` units (default: its frame count). `join` = [first frame, length] (0-based) of a
  *  dissolve baked into the clip: the scroll skips it and can never rest on it. img: a still held for `w` units. */
-export type ClipSeg = { clip: string; w?: number; join?: [number, number] };
+export type ClipSeg = { clip: string; w?: number; join?: [number, number]; fade?: number };
 export type ImgSeg = { img: string; w: number; fade?: number; start?: boolean };
 export type Seg = ClipSeg | ImgSeg;
 export type Layer = { i: number; t: number; alpha: number };
@@ -72,7 +72,7 @@ export function layersAt(segs: Seg[], tl: Timeline, x: number, fadeDef = 8): Lay
   const u = Math.min(1, Math.max(0, x)) * tl.W;
   const alphas = segs.map((s, i) => {
     if (i === 0) return 1;
-    const f = ("img" in s && s.fade) || fadeDef;
+    const f = s.fade || fadeDef;
     const lo = "img" in s && s.start ? tl.b[i] : tl.b[i] - f / 2;
     return ss((u - lo) / f);
   });
