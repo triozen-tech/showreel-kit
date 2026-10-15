@@ -31,7 +31,7 @@ Changes from the PDF (2026-10-10):
 | 19 | Smartphone · Lumen Phone | D phone separates into layers, snaps back | Tech minimal | "An Apple-style launch page in one day." | planned |
 | 20 | Streetwear drop · **Kerbcode Studio** (renamed: the plan's name clashed with a registered trademark) | B hoodie on an invisible mannequin, 360° | Bold sport (wide font) | "Streetwear drops need hype pages." | **in progress** (Round 0) |
 | 21 | **Luxury villas · The Palms Residences** (moved from Day 08) | C drone glide through the living room out to the pool | Real estate | "Tour a villa in 20 seconds." | planned · travelling object |
-| 22 | Architecture studio · Form & Void | C glide through a minimal concrete house | Real estate | "Architects: this is your portfolio." | planned |
+| 22 | Music recording studio · Tallow & Tape | C glide from the control room into the live room | Dark studio (warm lamp light on black) | "Studios: this is your website." | planned |
 | 23 | Motorcycle · Ridge Motors | A bike riding up a misty mountain road | Dark luxury (bronze) | "Mountain roads on a scroll wheel." | planned |
 | 24 | Wedding photography · Eternal Frames | A push-in on a decorated mandap, falling petals | Noir (gold accent) | "Photographers need websites that feel like the day." | planned · travelling object |
 | 25 | Electric car · Volta EV | B car on a turntable in a white studio | Tech minimal | "A car configurator feel, no code visible." | planned |
