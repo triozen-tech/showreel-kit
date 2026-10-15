@@ -188,3 +188,10 @@ Short rules learned the hard way on Days 1–7. `/new-site` and every round star
 153. **Check every brand name online in Round 0**: the plan's name and a shortlist name both clashed with real brands on Day 19 (Lumen Phone became Halden).
 154. **Day 20 asset rules:** Claude never makes cut-outs (the user supplies any PNG); run `clean-mark` on a whole batch in one go (originals in `raw/_orig`) without viewing each image; replies stay 2-3 lines.
 155. **Cloud sessions:** the public day repo never holds reference screenshots; they go in the private repo `triozen-tech/refs` under `day<N>/` (see `docs/CLOUD.md`).
+
+## Day 19 · Halden (round 2–3)
+156. **One continuous film beats stacked stages**: a single sticky stage scrubbing V1..V12 as one timeline replaced the separate pinned stages after review (no seams, one scroll length to tune).
+157. **A cut-out behind a big word only works while the phone is still**: moving video and a still cut-out drift apart, so the word-behind-phone layer shows only on held frames (hero start, footer end).
+158. **Cards must match what is on screen**: time every card window against the actual frames (use the `CARD` table), not the planned clip length.
+159. **Price cards need a hold**: a still between V11 and V12 (~6% of the scroll) gives the cards time to be read.
+160. **The cover badge is part of the locked spec** (empty black box for Instagram's view count); if a cover must have no empty box, paint it out after `npm run cover`, don't edit the script.
