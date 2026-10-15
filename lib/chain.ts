@@ -38,3 +38,62 @@ export function chainAt(counts: number[], p: number, fade = 0.04): ChainLayer[] 
   } else layers.push(at(i, x));
   return layers;
 }
+
+/* ---------- timeline mode: stills + clips on one scroll, Veo joins skipped ---------- */
+// Used by FrameScrub's `segs` prop. A timeline is a row of segments, each `w` scroll units wide (a clip defaults to its frame
+// count). Every segment after the first fades IN over `fade` units centred on its start (or starting at it with `start`).
+
+const ss = (x: number) => { const m = Math.min(1, Math.max(0, x)); return m * m * (3 - 2 * m); };
+export const smooth = (a: number, b: number, x: number) => ss((x - a) / (b - a));
+/** Rises a..b, falls c..d (smooth); 0 outside. */
+export const ramp = (x: number, a: number, b: number, c: number, d: number) => ss((x - a) / (b - a)) * (1 - ss((x - c) / (d - c)));
+
+/** clip: folder of a frame sequence; plays over `w` units (default: its frame count). `join` = [first frame, length] (0-based) of a
+ *  dissolve baked into the clip: the scroll skips it and can never rest on it. img: a still held for `w` units. */
+export type ClipSeg = { clip: string; w?: number; join?: [number, number] };
+export type ImgSeg = { img: string; w: number; fade?: number; start?: boolean };
+export type Seg = ClipSeg | ImgSeg;
+export type Layer = { i: number; t: number; alpha: number };
+/** Scroll px a join zone may take. */
+export const JOIN_PX = 3;
+
+const weightOf = (s: Seg, n: number) => ("clip" in s ? (s.w ?? n) : s.w);
+
+/** counts[i] = frame count of segment i (ignored for stills). */
+export function timeline(segs: Seg[], counts: number[]) {
+  const b = [0];
+  segs.forEach((s, i) => b.push(b[b.length - 1] + weightOf(s, counts[i] ?? 0)));
+  return { W: b[b.length - 1], b, w: (i: number) => b[i + 1] - b[i] };
+}
+export type Timeline = ReturnType<typeof timeline>;
+
+/** The layers to draw at progress x (1, or 2 while a segment fades in); `t` = 0..1 inside the segment. */
+export function layersAt(segs: Seg[], tl: Timeline, x: number, fadeDef = 8): Layer[] {
+  const u = Math.min(1, Math.max(0, x)) * tl.W;
+  const alphas = segs.map((s, i) => {
+    if (i === 0) return 1;
+    const f = ("img" in s && s.fade) || fadeDef;
+    const lo = "img" in s && s.start ? tl.b[i] : tl.b[i] - f / 2;
+    return ss((u - lo) / f);
+  });
+  let k = 0;
+  alphas.forEach((a, i) => { if (a > 0) k = i; });
+  const mk = (i: number, alpha: number): Layer => ({ i, alpha, t: Math.min(1, Math.max(0, (u - tl.b[i]) / (tl.b[i + 1] - tl.b[i]))) });
+  return k > 0 && alphas[k] < 1 ? [mk(k - 1, 1), mk(k, alphas[k])] : [mk(k, 1)];
+}
+
+export type JoinZone = { A: number; B: number; zf: number; yA: number };
+/** Join zone of clip segment i: the last clean frame A before the dissolve, the first clean frame B after it, the zone's width
+ *  in frames (JOIN_PX of scroll) and the page y where it starts. runPx = scroll px of the whole timeline, secTop = its page y. */
+export function joinZone(seg: Seg, i: number, n: number, tl: Timeline, runPx: number, secTop: number): JoinZone | null {
+  if (!("clip" in seg) || !seg.join) return null;
+  const j = seg.join, w = tl.w(i), A = j[0] - 1, B = j[0] + j[1];
+  const gpp = ((n - 1) / w) * (tl.W / runPx); // frames per scroll px
+  return { A, B, zf: JOIN_PX * gpp, yA: secTop + ((tl.b[i] + (A / (n - 1)) * w) / tl.W) * runPx };
+}
+/** Frame to show for clip position g: the dissolve frames pass inside the zone, so the picture jumps from A to B within JOIN_PX. */
+export function joinMap(g: number, z: JoinZone, n: number) {
+  if (g <= z.A) return g;
+  if (g < z.A + z.zf) return z.A + ((g - z.A) / z.zf) * (z.B - z.A);
+  return Math.min(n - 1, g + (z.B - z.A - z.zf));
+}

@@ -71,6 +71,12 @@ This repo builds **one showcase website per day**. The team films the laptop scr
 - **Max one attempt, ~30 min.** Compare it side by side with the Flow master shot; if it doesn't look equally real, drop it at once and use Flow stills + code motion. **Don't start a second Blender pass without asking the user.**
 - Round 0 lists **each asset's source: Flow, code or Blender (with the reason)**, and a code fallback where one exists.
 
+### Asset handling (permanent rule, from Day 19-20)
+- **Flow edits attach ONE image only** (the master still). A variant that can be made from cut-outs is built in code (see `scripts/lineup.py`), not in Flow.
+- **Claude never makes cut-outs for the user's assets** unless asked: the user supplies PNG cut-outs; never convert JPG to PNG.
+- **Watermark removal is per batch:** run `npm run clean-mark` over the whole batch in one run (originals to `raw/_orig`), don't open each image, report only the cleaned file names in one line.
+- **Cloud sessions:** see `docs/CLOUD.md` (reference screenshots go to the private `triozen-tech/refs` repo, never the public day repo).
+
 ### Prompts (permanent rule, every day)
 - **Claude Code never writes or prints Flow / Veo prompts**: not in chat, not in DESIGN.md, not in any file. The user's director gives the prompts to the user in chat, batch by batch.
 - DESIGN.md's asset list says *what* each asset is (content, use, size, file type, which image a Flow edit attaches, code fallback), never *how to prompt it*.

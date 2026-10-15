@@ -13,3 +13,13 @@ Scroll plays video. Frames are images, the picture is a pure function of scroll 
 5. `?static=1` = one still frame, no motion. The OS reduce-motion setting is never read.
 6. Test page: `/lab/scrub` (needs frames named `_test-v1`, `_test-v2`).
 7. Size: a single file over 50 MB goes through Git LFS; 100 MB is GitHub's hard limit. No total repo-size rule.
+
+## Timeline mode: clips + stills on one scroll (from Day 21)
+
+`<FrameScrub segs={[...]} />` (no `frames` prop) plays a row of clips AND stills along one pinned section. Helpers in `lib/chain.ts` (`timeline`, `layersAt`, `joinZone`, `joinMap`, `smooth`, `ramp`), shared loader store in `lib/frames.ts` (`ensureClip`, `clipProgress`, `viewClip`, `setClipOrder`, `getStill`).
+
+- `segs`: `{ clip: "/frames/x-v1", w?, join? }` or `{ img, w, fade?, start? }`. A clip plays over `w` scroll units (default its frame count); every segment after the first crossfades in over 8 units centred on its start.
+- **Veo dissolve joins**: `join: [firstFrame, length]` (0-based) makes the scroll skip the baked dissolve; the picture jumps A to B inside 3 px and a scroll that stops there for 150 ms hops (<= 4 px) to the clean side. Test with `node scripts/join-test.mjs [port]` (must report 0 resting stops).
+- `lead` / `hold` (px pinned before / after), `onProgress(p, still, holdPx)`, `children` inside the breathing layer, `stillAt` for `?static=1`.
+- Preload: first clip within 1.6 screens (or call `ensureClip` from a loader and read `clipProgress`), next clip at 50 %, only the clip on screen and its neighbours (`clipOrder`) stay decoded.
+- Keep a small data-only `site/clips.ts` (folders, joins) and never copy the scrub code into the site.
