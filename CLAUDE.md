@@ -35,7 +35,7 @@ This repo builds **one showcase website per day**. The team films the laptop scr
 | `archive/` | Finished sites (`npm run archive -- <name>`, `npm run restore -- <name>`). **Local only, not in git** | — |
 | `docs/` | `REFERENCE-SOURCES.md` (where references come from, logins, automated-browsing rules), `LESSONS.md` (**read first**), `DESIGN-MENU.md` (the variety engine), `MOTION-MENU.md` (a motion code for every section), `SOURCES.md` (open-source effects + licences), `SITES-LOG.md` (**local only, not in git**), `SITES-SUMMARY.md` (codes-only summary of past days, in git, for cloud sessions), AI prompts, filming guide | Update the log + lessons |
 
-**The repo shows only the current project.** Each day lives in its own folder (a copy of the kit), so old sites stay safe there. In git there is only: today's site (`site/`) **and its assets** (`raw/` Flow images + Veo videos, `public/images/<slug>/`, `public/frames/<slug>-*`, `public/videos/` (scrub/loop films), `cover.jpg`), the engine, the pattern library and the kit docs. No other brand names or images. `.gitignore` keeps `archive/`, `docs/SITES-LOG.md`, `recordings/`, `*.mov`, final reel videos, venvs, `node_modules/`, `.next/`, `.env*` and `.DS_Store` out. **Any single asset over 50 MB goes through Git LFS** (`.gitattributes`; `npm run assets` checks sizes and warns over 100 MB).
+**The repo shows only the current project.** Each day lives in its own folder (a copy of the kit), so old sites stay safe there. In git there is only: today's site (`site/`) **and its assets** (`raw/` Flow images + Veo videos, `public/images/<slug>/`, `public/frames/<slug>-*`, `public/videos/` (scrub/loop films), `cover.jpg`), the engine, the pattern library and the kit docs. No other brand names or images. `.gitignore` keeps `archive/`, `docs/SITES-LOG.md`, `recordings/`, `*.mov`, final reel videos, venvs, `node_modules/`, `.next/`, `.env*` and `.DS_Store` out. **No file-size limits:** the best output matters more than file size (full-resolution stills, WebP q90+, full-quality frames); `npm run assets` only lists sizes.
 
 `app/page.tsx` renders the engine + `site/Page.tsx`. `app/layout.tsx` reads `site/site.ts` (colours → CSS variables) and imports `site/fonts.ts` + `site/site.css`.
 
@@ -120,7 +120,7 @@ This repo builds **one showcase website per day**. The team films the laptop scr
 
 ### Round 1 — Structure (build it)
 1. **Save the old site first**: `npm run archive -- <day-NN-slug>` (if not already saved), then clear `site/` except `DESIGN.md`.
-2. **Assets**: put images in `public/images/<slug>/`. For every scroll video use the **`video-frames`** skill (`site/frames.json` + `npm run film-frames`: by video time, watermark painted out, ≤ 12 MB; play with `lib/film.ts` + `FilmPin`). The older `npm run frames -- raw/<video>.mp4 frames/<slug>-<name>` still works for simple evenly spaced frames. Cut-out product images (transparent PNG/WebP) for pop cards / colour switcher. Checking and recording assets: **`flow-prompts`** skill (no prompts).
+2. **Assets**: put images in `public/images/<slug>/`. For every scroll video use the **`video-frames`** skill (`site/frames.json` + `npm run film-frames`: by video time, watermark painted out, full quality WebP q90+, no size budget; play with `lib/film.ts` + `FilmPin`). The older `npm run frames -- raw/<video>.mp4 frames/<slug>-<name>` still works for simple evenly spaced frames. Cut-out product images (transparent PNG/WebP) for pop cards / colour switcher. Checking and recording assets: **`flow-prompts`** skill (no prompts).
 3. **Fonts**: `npm i` the chosen pair, import them in `site/fonts.ts`.
 4. **Write** `site/site.ts` (meta, theme, record), `site/site.css` (brand-specific styles: buttons, eyebrow, special effects), `site/content.ts` (all text/data), `site/components/*` and `site/Page.tsx`.
    - Copy each pattern you use into `site/components/` under a brand-specific name and **restyle it** (see the end of DESIGN-MENU.md). Import **at most 3 patterns unchanged** from `components/patterns/`.
@@ -155,14 +155,14 @@ This repo builds **one showcase website per day**. The team films the laptop scr
 
 ### Round 5 — Polish, performance, archive (ready to film)
 1. Readability (small text ≥ 12px, contrast), headings not breaking badly at 1440px.
-2. **Performance**: frames < 15 MB per video, images WebP and sized, no layout jumps, particles/canvas pause off screen, smooth scrolling at 1440 and 1920.
+2. **Performance**: keep full-resolution stills, WebP q90+ and full-quality frames (never shrink files for size); performance comes from lazy loading and releasing frames off screen, no layout jumps, particles/canvas pause off screen, smooth scrolling at 1440 and 1920.
 3. `?static=1` still shows every section in its final state.
 4. No console errors; `npm run build` passes.
 5. Set `meta.record.duration` so the **whole page scrolls in 25–40 s** (reel length). Test: `npm run build && npm start` → `npm run reel` (or watch `http://localhost:3005/?record=1`).
 6. **Final checks**: `npm run reel -- <day-NN-slug>-final` (PASS), `npm run check`. Send the user the 1440 reel.
    - **Reel cover** (locked spec: `docs/COVER.md`): take the hero frame from the final reel (LEAN: a live 1440×900 screenshot of the hero with `?static=1`) → `raw/cover-shot.jpg`; cut out **one clean object, never a person** (`npm run cutout`; if the cutout env is missing, run `npm run cutout:setup` first, automatically, don't ask) → `raw/cover-object.png`; then `npm run cover -- --day <N> --niche "<WORD>" --accent "<accent>"` → `recordings/day-NN-cover.jpg` (cover-check runs on it; nudge with `--object-cx` / `--object-bottom` if the object covers the headline or the nav button). Copy it to `/Users/hosanna/3D Websites/covers/day-NN-cover.jpg`.
 7. **Add a row to `docs/SITES-LOG.md`** (including the Motion column: loader · hero · signature codes, the **Layouts column**: every section's layout code, and the **Traveling object column**: F code + its path, or "—"), **add the day's new lessons to `docs/LESSONS.md`**, and run `npm run archive -- <day-NN-slug>` (skill: **`archive-day`**, which also commits and pushes the day's repo when asked).
-8. **Repo check**: run `npm run assets` (nothing over 50 MB outside LFS) and `git ls-files`, and confirm the repo only contains the current site's assets (`raw/`, frames, images, cover), the engine, the pattern library and the kit docs: no other brand names (`git grep -il <old names>`) and no other site's images. Report the file list (grouped by folder) and the total size (`git ls-files -z | xargs -0 du -ch | tail -1`).
+8. **Repo check**: run `npm run assets` (lists sizes, no limit) and `git ls-files`, and confirm the repo only contains the current site's assets (`raw/`, frames, images, cover), the engine, the pattern library and the kit docs: no other brand names (`git grep -il <old names>`) and no other site's images. Report the file list (grouped by folder) and the total size (`git ls-files -z | xargs -0 du -ch | tail -1`).
 9. Report back in plain simple language: the section list, anything skipped, and the filming command (see `docs/RECORDING.md`).
 
 ### Checks every round (Rounds 1–5)
@@ -196,7 +196,7 @@ If you build something on a site that would be useful again (a new nav, hero, ca
 - `npm run dev` / `npm run build && npm start` (use production for filming)
 - `npm run frames -- <video> <folder> [--zoom 1.2] [--max 160] [--start s] [--end s] [--reverse]`
 - `npm run check`: all images/frames used in `site/` exist
-- `npm run assets`: asset sizes (raw, frames, images, cover) + biggest file; fails if a file over 50 MB is not in Git LFS, warns over 100 MB
+- `npm run assets`: asset sizes (raw, frames, images, cover) + biggest file; information only, no size limit or warning
 - `npm run reel [-- <name>]`: record `?record=1` at 1440×900 → `recordings/<name>.mp4` + freezedetect + frame-diff (PASS / FAIL)
 - `npm run film-frames [clip]`: video → scroll frames by video time (`site/frames.json`, skill `video-frames`). Quick mode, no config: `npm run film-frames -- --src raw/v1.mp4 --name <slug>-v1 [--fps 24 | --count 120] [--fmt webp|jpg] [--width 1600] [--quality 72] [--start s --end s]` → `public/frames/<name>/` + `manifest.json` (count, size, fps, times); the Flow mark is painted out
 - `npm run cover -- --day <N> --niche "<WORD>" --accent "#rrggbb" [--object raw/cover-object.png] [--shot raw/cover-shot.jpg] [--dir <day folder>]`: the 9:16 reel cover → `recordings/day-XX-cover.jpg` (locked spec: `docs/COVER.md`)

@@ -5,7 +5,7 @@
 | 1. Pick the brand, write a one-line brief | 10 min | anyone |
 | 2. **Round 0:** `/new-site <brief>` → Claude Code writes `site/DESIGN.md` (look, fonts, layout plan, Motion map, missing assets) → approve | 15 min | Person B |
 | 3. Generate the assets DESIGN.md asks for (Google Flow: key images → videos; cut-out product images) | 60 min | Person A |
-| 4. `npm run frames` for each video, images into `public/images/<slug>/` | 10 min | Person B |
+| 4. `npm run frames` / `npm run film-frames` for each video (full quality, no size budget), images into `public/images/<slug>/` at full resolution | 10 min | Person B |
 | 5. **Round 1** structure → review `?static=1` on the laptop | 45 min | Person B |
 | 6. **Round 2** big motion (loader, hero, signature, pinned) → Claude sends the 1440 reel (`npm run reel`, checked) | 30 min | Person B |
 | 7. **Round 3** every other section's motion + transitions → the 1440 reel | 30 min | Person B |
@@ -15,6 +15,8 @@
 | 11. Edit (top text, trending song), post Reel + Story | 45 min | Person C |
 
 **Every round** Claude first re-reads `docs/LESSONS.md`, then runs the checks itself: `npm run reel` (laptop 1440×900 only, freezedetect + frame-diff must PASS) Desktop only (1440×900): no phone layouts, no phone checks.
+
+**No file-size limits:** the best output matters more than file size (full-resolution stills, WebP q90+, full-quality frames). Performance comes from lazy loading and releasing frames, not from shrinking files.
 
 ## The one-line brief
 

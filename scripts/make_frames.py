@@ -14,7 +14,8 @@ site/frames.json (one per site):
       "hero": {
         "src": "hero.mp4", "start": 0, "end": 6,          seconds of raw/<src> to use (prefer early seconds)
         "segs": [[0, 3, 16], [3, 6, 24]],                  [t0, t1, fps]: double density (24–48) in slow/key parts
-        "desk": [1600, 6.0], "phone": [540, 3.2],          [width px, MB budget] (≤ 12 MB desktop, ≤ 6 MB phone)
+        "desk": [1600], "phone": [540],                    [width px]; no size budget, frames are full quality (WebP q90 default)
+        "quality": 90,                                     optional WebP quality (default 90, never lower it to save bytes)
         "phone_cx": [[0, 960]] | "track",                 phone crop centre (x of 1920) over time, or follow the subject
         "phone_crop": 720,                                 720 = 2:3 crop, 1080 = square
         "shrink": 0.9,                                     optional: shrink the frame with a soft fade (headroom)
@@ -27,7 +28,7 @@ site/frames.json (one per site):
 
 For every clip: ffmpeg trims, paints out the watermark and motion-interpolates to 48 fps (temp JPEGs, deleted at the
 end) → frames are picked by video time per segment → graded onto the page colour → WebP desktop + phone at the best
-quality that fits the budget → manifest.json with "times" (the video second of every frame). Play them with
+full quality (WebP q90 or higher, no size budget) → manifest.json with "times" (the video second of every frame). Play them with
 lib/film.ts + components/patterns/FilmPin.tsx (scroll → video time, neighbour frames blended, lazy loading).
 """
 import argparse, io, json, os, shutil, subprocess, sys, tempfile
@@ -181,8 +182,8 @@ def render(name, c):
         cx_keys = track_cx(files, times)
         print("  phone crop centre:", ", ".join(f"{t:.2f}s→{x:.0f}" for t, x in cx_keys[::4]))
 
-    dw, desk_mb = c["desk"]
-    pw, phone_mb = c.get("phone") or (0, 0)  # desktop only: phone sets are optional (omit "phone")
+    dw = c["desk"][0]
+    pw = (c.get("phone") or [0])[0]  # desktop only: phone sets are optional (omit "phone")
     crop_w = c.get("phone_crop", 720)  # 720 = a 2:3 crop; 1080 = square (the closing: whole can, street to the sides)
     ph = round(pw * 1080 / crop_w) if pw else 0
     desk, phone = [], []
@@ -199,42 +200,25 @@ def render(name, c):
             x0 = int(min(1920 - crop_w, max(0, cx - crop_w / 2)))
             phone.append(np.asarray(im.crop((x0, 0, x0 + crop_w, 1080)).resize((pw, ph), Image.LANCZOS)))
 
-    outs = (("", desk, desk_mb), ("-m", phone, phone_mb))
+    outs = (("", desk), ("-m", phone))
     if PHONE_ONLY:
         outs = outs[1:]
     if not pw:
         outs = outs[:1]
-    for suffix, frames, budget in outs:
+    for suffix, frames in outs:
         folder = OUT / f"{SLUG}-{name}{suffix}"
         if folder.exists():
             shutil.rmtree(folder)
         folder.mkdir(parents=True)
-        # pick the quality from a sample, then encode everything once (re-encode lower if still over)
-        q = 72
-        sample = frames[:: max(1, len(frames) // 12)]
-        while q > 40:
-            size = sum(len(_bytes(f, q)) for f in sample) * len(frames) / len(sample)
-            if size / 1e6 <= budget * 0.95:
-                break
-            q -= 4
-        while True:
-            jobs = [(f, folder / f"frame_{i + 1:04d}.webp", q) for i, f in enumerate(frames)]
-            with ProcessPoolExecutor() as ex:
-                total = sum(ex.map(encode, jobs, chunksize=4))
-            if total / 1e6 <= budget or q <= 40:
-                break
-            q -= 4
+        q = int(c.get("quality", 90))
+        jobs = [(f, folder / f"frame_{i + 1:04d}.webp", q) for i, f in enumerate(frames)]
+        with ProcessPoolExecutor() as ex:
+            total = sum(ex.map(encode, jobs, chunksize=4))
         h, w = frames[0].shape[:2]
         manifest = dict(count=len(frames), ext="webp", width=w, height=h, pad=4, prefix="frame_",
                         times=[round(t, 4) for t in times])
         (folder / "manifest.json").write_text(json.dumps(manifest))
         print(f"  ✓ {SLUG}-{name}{suffix}: {len(frames)} frames {w}×{h} q{q} = {total / 1e6:.1f} MB")
-
-
-def _bytes(arr, q):
-    b = io.BytesIO()
-    Image.fromarray(arr).save(b, "WEBP", quality=q, method=5)
-    return b.getvalue()
 
 
 PHONE_ONLY = "--phone-only" in sys.argv
@@ -281,8 +265,6 @@ def quick(a):
     (out / "manifest.json").write_text(json.dumps(man))
     shutil.rmtree(tmp, ignore_errors=True)
     print(f"  ✓ {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}: {len(files)} frames {w}×{h} {ext} q{a.quality} = {total / 1e6:.1f} MB")
-    if total > 50e6:
-        print("  ! over 50 MB in total: lower --width/--quality (a single file over 50 MB goes through Git LFS; 100 MB is the hard limit)")
 
 
 if __name__ == "__main__":
@@ -294,7 +276,7 @@ if __name__ == "__main__":
         ap.add_argument("--fps", type=float, default=24)
         ap.add_argument("--count", type=int, help="exact frame count (overrides --fps)")
         ap.add_argument("--fmt", choices=["webp", "jpg"], default="webp")
-        ap.add_argument("--quality", type=int, default=72)
+        ap.add_argument("--quality", type=int, default=90)
         ap.add_argument("--width", type=int, default=1600)
         ap.add_argument("--start", type=float, default=0)
         ap.add_argument("--end", type=float, default=0)

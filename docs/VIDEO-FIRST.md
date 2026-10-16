@@ -3,7 +3,7 @@
 Scroll plays video. Frames are images, the picture is a pure function of scroll (any speed, back and forward).
 
 1. **Frames**: `npm run film-frames -- --src raw/v1.mp4 --name <slug>-v1 --fps 24 --fmt webp --width 1600`
-   (`--count N` for an exact frame count, `--fmt jpg`, `--start/--end`, `--quality`, `--delogo ""` to skip the Flow mark paint-out).
+   (`--count N` for an exact frame count, `--fmt jpg`, `--start/--end`, `--quality` (default 90), `--delogo ""` to skip the Flow mark paint-out).
    Output: `public/frames/<name>/frame_0001.webp …` + `manifest.json` `{count, ext, width, height, pad, prefix, fps, times}`.
    Config-driven mode (`site/frames.json`, video time, phone sets) still works: `npm run film-frames [clip]`.
 2. **One clip**: `<FrameScrub frames="/frames/<slug>-v1" />` inside a tall section with a sticky stage.
@@ -12,7 +12,7 @@ Scroll plays video. Frames are images, the picture is a pure function of scroll 
 4. Props: `section` / `start`+`end` (scroll range), `ease` (damping), `breath` (idle drift, 0 = off), `stillAt`, `hoverNudge`, `onHover`.
 5. `?static=1` = one still frame, no motion. The OS reduce-motion setting is never read.
 6. Test page: `/lab/scrub` (needs frames named `_test-v1`, `_test-v2`).
-7. Size: a single file over 50 MB goes through Git LFS; 100 MB is GitHub's hard limit. No total repo-size rule.
+7. Size: no limit. Keep full-resolution stills, WebP q90+ and full-quality frames; performance comes from lazy loading and releasing frames, not from smaller files.
 
 ## Timeline mode: clips + stills on one scroll (from Day 21)
 

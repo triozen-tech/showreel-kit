@@ -1,6 +1,5 @@
 # The repo shows only the current project (see CLAUDE.md), code AND its assets:
 # raw/ (Flow images + Veo videos), public/frames/, public/images/, cover.jpg are TRACKED and pushed.
-# Any single asset over 50 MB goes through Git LFS (see .gitattributes, `npm run assets`).
 # Old sites live in their own day folders / repos; these stay local:
 archive/
 docs/SITES-LOG.md

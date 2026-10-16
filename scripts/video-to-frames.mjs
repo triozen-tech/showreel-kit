@@ -12,7 +12,7 @@
 //  Options:
 //    --max <n>      max number of frames (default 180). More = smoother, heavier.
 //    --width <px>   frame width (default 1920 — sharp on a laptop screen)
-//    --quality <n>  0–100 (default 78)
+//    --quality <n>  0–100 (default 90)
 //    --start <s>    start time in seconds
 //    --end <s>      end time in seconds
 //    --format       webp (default, small) or jpg
@@ -54,7 +54,7 @@ const folder = folderArg.replace(/^\/+/, "").replace(/^public\//, "").replace(/\
 const outDir = resolve("public", folder);
 const max = Number(flags.max ?? 180);
 const width = Number(flags.width ?? 1920);
-const quality = Number(flags.quality ?? 78);
+const quality = Number(flags.quality ?? 90);
 const format = flags.format === "jpg" ? "jpg" : "webp";
 const start = flags.start !== undefined ? Number(flags.start) : undefined;
 const end = flags.end !== undefined ? Number(flags.end) : undefined;

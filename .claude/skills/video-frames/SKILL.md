@@ -18,12 +18,12 @@ Read `docs/LESSONS.md` first (frame-scrub stutter, preload, fade video edges). D
 { "slug": "<slug>", "background": "<page bg hex>", "delogo": "delogo=x=1852:y=1032:w=56:h=32",
   "clips": { "hero": { "src": "hero.mp4", "start": 0, "end": 6,
     "segs": [[0, 2.5, 16], [2.5, 4, 48], [4, 6, 24]],
-    "desk": [1600, 12] } } }
+    "desk": [1600] } } }
 ```
 `python3 scripts/make_frames.py [clip]` (set `FRAMES_TMP` to a scratch folder if disk is tight; it deletes its temp files).
 - **Watermark:** the Veo mark sits at the bottom right (x 1865–1895, y 1042–1055 of 1920×1080) → `delogo` paints it out. Check one frame.
 - **Double density in slow/important parts:** `segs` = `[t0, t1, fps]`; 12–16 fps for calm parts, 24–48 fps where the motion is fast or the key moment happens (the source is motion-interpolated to 48 fps first).
-- **Budgets:** ≤ 12 MB, never > 15 MB per folder. The tool lowers WebP quality until it fits; if it can't at q40, cut the width or the fps.
+- **Quality, no size budget:** frames are full quality (WebP q90 default; `"quality"` in the clip config may only go higher). Never lower quality, width or fps to save bytes; performance comes from lazy loading and releasing frames.
 - **Grade:** near-black is mapped onto the page background, so frames melt into the page (no box edge).
 - Output: `public/frames/<slug>-<clip>` with `manifest.json` incl. `times` (video second of every frame).
 
@@ -40,7 +40,7 @@ Read `docs/LESSONS.md` first (frame-scrub stutter, preload, fade video edges). D
 1. Flow turntable video (skill `flow-prompts`) → `raw/turntable.mp4`.
 2. Frames: `ffmpeg -ss 0 -t 6 -i raw/turntable.mp4 -vf "fps=6,scale=1024:-1" raw/turn/f_%03d.jpg` (36 frames for one 360° turn in 6 s; pick the exact turn from a contact sheet).
 3. Remove the background: `npm run cutout -- raw/turn raw/turn-cut` (rembg, **`-m birefnet-general`** is forced by the script: the newest default model is not licensed for commercial use).
-4. WebP: `for f in raw/turn-cut/*.png; do cwebp -q 82 -alpha_q 90 "$f" -o public/images/<slug>/turn/$(basename "${f%.png}").webp; done` (or sharp). Budget ≤ 4 MB for the set.
+4. WebP: `for f in raw/turn-cut/*.png; do cwebp -q 92 -alpha_q 100 "$f" -o public/images/<slug>/turn/$(basename "${f%.png}").webp; done` (or sharp).
 5. Use them as the `angles` of `components/fx/travel/ObjectPNG.tsx` (the driver's `turn` 0..1 crossfades through them).
 
 ## 3D models (F2, F3, F6)
